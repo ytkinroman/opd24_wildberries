@@ -79,27 +79,33 @@ async def process_response(message: Message, state: FSMContext, url: str, progre
 
     if len(comments) == 1:
         if comments[0] == "error1":
-            logging.info(f"[Error] [WB] User {message.from_user.username} (ID: {message.from_user.id}), sent message: {message.text}, description: No comments, date: {get_tg_user_request_time()};")
+            logging.info(f"[Error] [WB] User {message.from_user.username} (ID: {message.from_user.id}), send message: {message.text}, description: No comments, date: {get_tg_user_request_time()};")
             await progress_message.delete()
+            await asyncio.sleep(1)
             await message.reply(BOT_MESSAGE_ERROR_NO_COMMENTS)
             await state.clear()
         elif comments[0] == "error2":
-            logging.info(f"[Error] [WB] User {message.from_user.username} (ID: {message.from_user.id}), sent message: {message.text}, description: Invalid url, date: {get_tg_user_request_time()};")
+            logging.info(f"[Error] [WB] User {message.from_user.username} (ID: {message.from_user.id}), send message: {message.text}, description: Invalid url, date: {get_tg_user_request_time()};")
             await progress_message.delete()
+            await asyncio.sleep(1)
             await message.reply(BOT_MESSAGE_ERROR_NO_URL)
             await state.clear()
         elif comments[0] == "error3":
-            logging.info(f"[Error] [WB] User {message.from_user.username} (ID: {message.from_user.id}), sent message: {message.text}, description: Unkown error, date: {get_tg_user_request_time()};")
+            logging.info(f"[Error] [WB] User {message.from_user.username} (ID: {message.from_user.id}), send message: {message.text}, description: Unkown error, date: {get_tg_user_request_time()};")
             await progress_message.delete()
+            await asyncio.sleep(1)
             await message.reply(BOT_MESSAGE_ERROR_UNKOWN)
             await state.clear()
     else:
         comments = remove_newline(replace_emoji(comments))
 
-        await asyncio.sleep(5)
+        await asyncio.sleep(2)
 
         #mood = await asyncio.to_thread(neuro_classifier.classify_data, comments)
 
-        await message.reply(f"{comments[:10]}")
+        result = f"Отлично, воооот результат:\n\n{comments[:5]}"
+        result = result.rstrip(']') + ", ........"
+
+        await message.reply(result)
         await progress_message.delete()
         await state.clear()

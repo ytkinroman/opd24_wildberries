@@ -1,14 +1,18 @@
+"""
+Модуль для работы с Wildberries API.
+
+Author: Al0n1
+Version: 1.0.0
+
+Description:
+Этот модуль позволяет получать отзывы о товарах с сайта Wildberries.
+"""
+
+
 import requests
 import json
 import datetime
 import time
-
-"""
-"error1.1" - нет коментов
-"error2" - не верная ссылка
-"error3" - неизвестная ошибка
-"400" - запрос вернул не код 200
-"""
 
 
 def remove_params(url: str) -> str:
@@ -36,8 +40,8 @@ class WB:
             'sec-ch-ua-platform': '"Windows"',
         }
         self.__url: str = url
-        self.__article: str = self.get_article_from_url()
-        self.__ImtId: str = self.get_ImtId_from_API()
+        self.__article = None
+        self.__ImtId = None
         self.__feedbacks: list = []
         self.__raw_data: str = None
         self.__attempt: int = 1
@@ -73,6 +77,12 @@ class WB:
         keys = new_headers.keys()
         for key in keys:
             self.get_headers()[key] = new_headers[key]
+
+    def set_article(self):
+        self.__article: str = self.get_article_from_url()
+
+    def set_ImtId(self):
+        self.__ImtId: str = self.get_ImtId_from_API()
 
     def raise_attempt(self):
         self.__attempt += 1
@@ -157,9 +167,15 @@ def exception_handler(wb: WB, exception_code: str, url: str, ex: str = "", numbe
 
 
 def check_url(url: str, wb: WB) -> bool:
+    ImtId_exist = False
     its_wildberries = url.startswith("https://www.wildberries.ru/catalog/") or url.startswith("https://wildberries.ru/catalog/")
+
+    wb.set_article()
     article_is_digit = wb.get_article().isdigit()
-    ImtId_exist = wb.get_ImtId()
+
+    if article_is_digit:
+        wb.set_ImtId()
+        ImtId_exist = True if wb.get_ImtId() != "" else False
 
     if its_wildberries and article_is_digit and ImtId_exist:
         return True
@@ -173,6 +189,9 @@ def get_wb_comments(url: str, size: int = 10) -> list:
     wb = WB(remove_params(url))
 
     if check_url(url, wb):
+        wb.set_article()
+        wb.set_ImtId()
+
         for attempt in range(1, 3):
             response = wb.parse()
             if response.status_code != 200:

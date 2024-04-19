@@ -5,8 +5,9 @@ from aiogram.types import Message
 from aiogram.filters import CommandStart, Command
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
-from config import BOT_MESSAGE_WELCOME, BOT_MESSAGE_HELP, BOT_MESSAGE_INFORMATION, BOT_MESSAGE_COMMAND, BOT_MESSAGE_REQUEST_PROGRESS, BOT_MESSAGE_WAIT, BOT_MESSAGE_NO_URL
-from modules.utils import get_tg_user_request_time, extract_url
+from config import BOT_MESSAGE_WELCOME, BOT_MESSAGE_HELP, BOT_MESSAGE_INFORMATION, BOT_MESSAGE_COMMAND, BOT_MESSAGE_REQUEST_PROGRESS, BOT_MESSAGE_WAIT, BOT_MESSAGE_NO_URL, PARSER_MAX_COMMENTS
+from modules.utils import get_tg_user_request_time, extract_url, remove_newline, replace_emoji
+from modules.WBParser import get_wb_comments
 
 router = Router()
 
@@ -69,10 +70,13 @@ async def process_message(message: Message, state: FSMContext):
         await state.set_state(StatesForm.waiting_for_processing)
         progress_message = await message.reply(BOT_MESSAGE_WAIT)
 
-        await asyncio.sleep(20)
+        await asyncio.sleep(5)
 
-        await message.reply("Ошибка обратки, повторите попытку позже...")
+        comments = get_wb_comments(url, PARSER_MAX_COMMENTS)
+        comments = remove_newline(replace_emoji(comments))
+
         await progress_message.delete()
+        await message.reply(f"Результат:\n\n{comments[:5]}")
         await state.clear()
     else:
         await message.reply(BOT_MESSAGE_NO_URL)

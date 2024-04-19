@@ -1,4 +1,8 @@
 from joblib import load
+from typing import Iterable, List
+
+__version__ = "1.3.0"
+__author__ = "ytkinroman"
 
 
 class NeuroClassifier:
@@ -11,35 +15,22 @@ class NeuroClassifier:
         """
         self.classifier = load(classifier_path)
 
-    def get_data(self, data_list: list[str]) -> str:
+    def classify_data(self, data_iterable: Iterable[str]) -> List[dict]:
         """
-        Генератор, который возвращает каждую строку данных из входного списка.
+        Классификация итерируемого объекта текстовых данных с использованием обученного классификатора.
 
         Параметры:
-        - data_list: Входной список данных.
+        - data_iterable (Iterable[str]): Итерируемый объект текстовых данных для классификации.
 
         Возвращает:
-        - line: Каждая строка данных из входного списка.
-        """
-        for line in data_list:
-            yield line
-
-    def classify_data(self, data_list: list[str]) -> list[dict]:
-        """
-        Классификация списка текстовых данных с использованием обученного классификатора.
-
-        Параметры:
-        - data_list (list[str]): Список текстовых данных для классификации.
-
-        Возвращает:
-        - results (list[dict]): Список словарей, содержащих результаты классификации для каждых текстовых
+        - results (List[dict]): Список словарей, содержащих результаты классификации для каждого текстового
           данных. Каждый словарь содержит следующие ключи:
             - 'label' (str): Предсказанная метка/класс.
             - 'score' (float): Уверенность в предсказании.
             - 'text' (str): Входной текст.
         """
         results = []
-        for text in self.get_data(data_list):
+        for text in data_iterable:
             result = self.classifier(text)
             result_dict = {'label': result[0]['label'], 'score': round(result[0]['score'], 6), 'text': text}
             results.append(result_dict)

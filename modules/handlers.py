@@ -1,15 +1,17 @@
 import asyncio
 import logging
+from config import *
 from aiogram import Router
 from aiogram.types import Message
 from aiogram.filters import CommandStart, Command
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
-from config import *
 from modules.utils import get_tg_user_request_time, extract_url, remove_newline, replace_emoji
+from modules.NeuroClassifier import NeuroClassifier
 from modules.WBParser import get_wb_comments
 
 router = Router()
+neuro_classifier = NeuroClassifier(NEURO_CLASSIFIER_PATH)
 
 
 class StatesForm(StatesGroup):
@@ -101,10 +103,10 @@ async def process_response(message: Message, state: FSMContext, url: str, progre
 
         await asyncio.sleep(2)
 
-        #mood = await asyncio.to_thread(neuro_classifier.classify_data, comments)
+        mood = await asyncio.to_thread(neuro_classifier.classify_data, comments)
 
-        result = f"Отлично, воооот результат:\n\n{comments[:5]}"
-        result = result.rstrip(']') + ", ........"
+        result = f"Отлично, воооот результат:\n\n{mood[:7]}"
+        result = result.rstrip(']') + ", ........ 🧎🏻‍♀️"
 
         await message.reply(result)
         await progress_message.delete()

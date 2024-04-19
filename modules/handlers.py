@@ -5,7 +5,7 @@ from aiogram.types import Message
 from aiogram.filters import CommandStart, Command
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
-from config import BOT_MESSAGE_WELCOME, BOT_MESSAGE_HELP, BOT_MESSAGE_INFORMATION, BOT_MESSAGE_COMMAND, BOT_MESSAGE_REQUEST_PROGRESS, BOT_MESSAGE_WAIT, BOT_MESSAGE_NO_URL, PARSER_MAX_COMMENTS
+from config import *
 from modules.utils import get_tg_user_request_time, extract_url, remove_newline, replace_emoji
 from modules.WBParser import get_wb_comments
 
@@ -69,14 +69,37 @@ async def process_message(message: Message, state: FSMContext):
 
         await state.set_state(StatesForm.waiting_for_processing)
         progress_message = await message.reply(BOT_MESSAGE_WAIT)
+        asyncio.create_task(process_response(message, state, url, progress_message))
+    else:
+        await message.reply(BOT_MESSAGE_NO_URL)
+
+
+async def process_response(message: Message, state: FSMContext, url: str, progress_message):
+    comments = get_wb_comments(url, PARSER_MAX_COMMENTS)
+
+    if len(comments) == 1:
+        if comments[0] == "error1":
+            logging.info(f"[Error] [WB] User {message.from_user.username} (ID: {message.from_user.id}), sent message: {message.text}, description: No comments, date: {get_tg_user_request_time()};")
+            await progress_message.delete()
+            await message.reply(BOT_MESSAGE_ERROR_NO_COMMENTS)
+            await state.clear()
+        elif comments[0] == "error2":
+            logging.info(f"[Error] [WB] User {message.from_user.username} (ID: {message.from_user.id}), sent message: {message.text}, description: Invalid url, date: {get_tg_user_request_time()};")
+            await progress_message.delete()
+            await message.reply(BOT_MESSAGE_ERROR_NO_URL)
+            await state.clear()
+        elif comments[0] == "error3":
+            logging.info(f"[Error] [WB] User {message.from_user.username} (ID: {message.from_user.id}), sent message: {message.text}, description: Unkown error, date: {get_tg_user_request_time()};")
+            await progress_message.delete()
+            await message.reply(BOT_MESSAGE_ERROR_UNKOWN)
+            await state.clear()
+    else:
+        comments = remove_newline(replace_emoji(comments))
 
         await asyncio.sleep(5)
 
-        comments = get_wb_comments(url, PARSER_MAX_COMMENTS)
-        comments = remove_newline(replace_emoji(comments))
+        #mood = await asyncio.to_thread(neuro_classifier.classify_data, comments)
 
+        await message.reply(f"{comments[:10]}")
         await progress_message.delete()
-        await message.reply(f"Результат:\n\n{comments[:5]}")
         await state.clear()
-    else:
-        await message.reply(BOT_MESSAGE_NO_URL)

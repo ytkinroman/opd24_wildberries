@@ -2,7 +2,7 @@
 Модуль для работы с Wildberries API.
 
 Author: Al0n1
-Version: 1.0.1
+Version: 1.0.2
 
 Description:
 Этот модуль позволяет получать отзывы о товарах с сайта Wildberries.
@@ -134,7 +134,6 @@ class WB:
 
         # Проверка статуса ответа от API
         if response.status_code != 200:
-            print("Status of getting ImtId: " + str(response))
             return ""
         else:
             # Извлечение идентификатора товара из ответа API
@@ -192,27 +191,23 @@ def exception_handler(wb: WB, exception_code: str, url: str, ex: str = "", numbe
     """
 
     if exception_code == "error2":
-        print("Указана неверная ссылка!")
         with open(f"logs/log_WB.txt", "a+", encoding="utf-8") as f:
             f.write(
-                f"\n[Error] {datetime.datetime.today().strftime('%d-%m-%Y %H-%M')} : Invalid URL: '{url}'\n")
+                f"\n[Error] {datetime.datetime.today().strftime('%d-%m-%Y %H-%M')} | Invalid URL: '{url}'\n")
 
     elif exception_code == "error1":
-        print("Не найдены комментарии!")
         with open(f"logs/log_WB.txt", "a+", encoding="utf-8") as f:
             f.write(
-                f"\n[Error] {datetime.datetime.today().strftime('%d-%m-%Y %H-%M')} : No comments! URL: '{url}'\n")
+                f"\n[Error] {datetime.datetime.today().strftime('%d-%m-%Y %H-%M')} | No comments! URL: '{url}'\n")
         wb.set_feedbacks(["error1"])
 
     elif exception_code == "error3":
-        print("Возникла ошибка при преобразовнии ответа от API. Смотри логи.")
         with open(f"logs/log_WB.txt", "a+", encoding="utf-8") as f:
             f.write(
-                f"\n[Error] {datetime.datetime.today().strftime('%d-%m-%Y %H-%M')} : Exception by refactoring answer from API Wildberries! URL: '{url}'\n{ex}\n")
+                f"\n[Error] {datetime.datetime.today().strftime('%d-%m-%Y %H-%M')} | Exception by refactoring answer from API Wildberries! URL: '{url}'\n   Exception description: {ex}\n")
         wb.set_feedbacks(["error3"])
 
     else:
-        print(f"Status of request: {exception_code}")
         with open(f"logs/log_WB.txt", "a+", encoding="utf-8") as f:
             f.write(
                 f"\n[Info] {datetime.datetime.today().strftime('%d-%m-%Y %H-%M')} : Status of request to API: {exception_code}! Number of attempt: {number_of_attempt}. URL: '{url}'\n")

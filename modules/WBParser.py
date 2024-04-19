@@ -2,7 +2,7 @@
 Модуль для работы с Wildberries API.
 
 Author: Al0n1
-Version: 1.0.0
+Version: 1.0.1
 
 Description:
 Этот модуль позволяет получать отзывы о товарах с сайта Wildberries.
@@ -25,6 +25,19 @@ def remove_params(url: str) -> str:
 
 
 class WB:
+    """
+    Класс для работы с Wildberries API и получения отзывов о товарах.
+
+    Attributes:
+        __url (str): URL-адрес товара на сайте Wildberries.
+        __headers (dict): Заголовки для запросов к API.
+        __article (str): Артикул товара.
+        __ImtId (str): Идентификатор товара в системе Wildberries.
+        __feedbacks (list): Список отзывов о товаре.
+        __raw_data (str): Сырые данные ответа от API.
+        __attempt (int): Номер попытки получения данных от API.
+    """
+
     def __init__(self, url: str):
         self.__headers: dict = {
             'Accept': '*/*',
@@ -98,18 +111,33 @@ class WB:
         return article
 
     def get_ImtId_from_API(self) -> str:
+        """
+        Получает идентификатор товара (ImtId) из API Wildberries.
+
+        Метод отправляет запрос к API Wildberries для получения информации о товаре по его артикулу.
+        Затем извлекает идентификатор товара (ImtId) из ответа API.
+
+        Returns:
+            str: Идентификатор товара (ImtId) или пустая строка, если идентификатор не найден.
+        """
+
+        # Установка заголовков для запроса
         headers = {
             'Authority': 'basket-12.wbbasket.ru',
             'Referer': f'https://www.wildberries.ru/catalog/{self.get_article()}/detail.aspx',
         }
         self.set_headers(headers)
 
+        # Отправка запроса к API Wildberries для получения данных о товаре
         response = requests.get(f'https://card.wb.ru/cards/v2/detail?appType=1&curr=rub&nm={self.get_article()}',
                                 headers=self.get_headers())
+
+        # Проверка статуса ответа от API
         if response.status_code != 200:
             print("Status of getting ImtId: " + str(response))
             return ""
         else:
+            # Извлечение идентификатора товара из ответа API
             return str(response.json()['data']['products'][0]['root']) if len(
                 response.json()['data']['products']) > 0 else ""
 
@@ -124,12 +152,24 @@ class WB:
         self.set_feedbacks(filtered_feedbacks)
 
     def parse(self) -> requests:
+        """
+            Выполняет запрос к API Wildberries для получения отзывов о товаре.
+
+            Метод отправляет GET-запрос к API Wildberries для получения отзывов о товаре по его идентификатору (ImtId).
+            Затем извлекает данные о отзывах из ответа API.
+
+            Returns:
+                requests: Ответ от API Wildberries.
+            """
+
+        # Установка заголовков для запроса
         headers = {
             'Referer': self.__url,
             'Authority': "",
         }
         self.set_headers(headers)
 
+        # Отправка запроса к API Wildberries для получения отзывов о товаре
         response = requests.get(f'https://feedbacks{self.get_attempt()}.wb.ru/feedbacks/v1/{self.get_ImtId()}',
                                 headers=self.get_headers())
 
@@ -137,6 +177,20 @@ class WB:
 
 
 def exception_handler(wb: WB, exception_code: str, url: str, ex: str = "", number_of_attempt: int = 1):
+    """
+    Обработчик исключений при работе с Wildberries API.
+
+    Args:
+        wb (WB): Объект класса WB, с которым связано исключение.
+        exception_code (str): Код исключения для определения типа ошибки.
+        url (str): URL-адрес товара, к которому производится запрос.
+        ex (str): Дополнительная информация об исключении.
+        number_of_attempt (int): Номер попытки запроса к API.
+
+    Returns:
+        None
+    """
+
     if exception_code == "error2":
         print("Указана неверная ссылка!")
         with open(f"logs/log_WB.txt", "a+", encoding="utf-8") as f:
@@ -167,6 +221,17 @@ def exception_handler(wb: WB, exception_code: str, url: str, ex: str = "", numbe
 
 
 def check_url(url: str, wb: WB) -> bool:
+    """
+    Проверяет корректность URL-адреса товара на сайте Wildberries.
+
+    Args:
+        url (str): URL-адрес товара на сайте Wildberries.
+        wb (WB): Объект класса WB, с которым связана проверка.
+
+    Returns:
+        bool: Результат проверки корректности URL-адреса.
+    """
+
     ImtId_exist = False
     its_wildberries = url.startswith("https://www.wildberries.ru/catalog/") or url.startswith("https://wildberries.ru/catalog/")
 
@@ -185,6 +250,17 @@ def check_url(url: str, wb: WB) -> bool:
 
 
 def get_wb_comments(url: str, size: int = 10) -> list:
+    """
+    Получает отзывы о товаре с сайта Wildberries.
+
+    Args:
+        url (str): URL-адрес товара на сайте Wildberries.
+        size (int): Количество отзывов для получения.
+
+    Returns:
+        list: Список отзывов о товаре.
+    """
+
     comments = []
     wb = WB(remove_params(url))
 

@@ -2,7 +2,7 @@
 Модуль для работы с Wildberries API.
 
 Author: Al0n1
-Version: 1.0.2
+Version: 1.0.3
 
 Description:
 Этот модуль позволяет получать отзывы о товарах с сайта Wildberries.

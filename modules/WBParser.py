@@ -11,8 +11,8 @@ Description:
 
 import requests
 import json
-import datetime
 import time
+from .utils import get_tg_user_request_time
 
 
 def remove_params(url: str) -> str:
@@ -193,24 +193,24 @@ def exception_handler(wb: WB, exception_code: str, url: str, ex: str = "", numbe
     if exception_code == "error2":
         with open(f"logs/log_WB.txt", "a+", encoding="utf-8") as f:
             f.write(
-                f"\n[Error] {datetime.datetime.today().strftime('%d-%m-%Y %H-%M')} | Invalid URL: '{url}'\n")
+                f"\n[Error] [{get_tg_user_request_time()}] | Invalid URL: '{url}'\n")
 
     elif exception_code == "error1":
         with open(f"logs/log_WB.txt", "a+", encoding="utf-8") as f:
             f.write(
-                f"\n[Error] {datetime.datetime.today().strftime('%d-%m-%Y %H-%M')} | No comments! URL: '{url}'\n")
+                f"\n[Error] [{get_tg_user_request_time()}] | No comments! URL: '{url}'\n")
         wb.set_feedbacks(["error1"])
 
     elif exception_code == "error3":
         with open(f"logs/log_WB.txt", "a+", encoding="utf-8") as f:
             f.write(
-                f"\n[Error] {datetime.datetime.today().strftime('%d-%m-%Y %H-%M')} | Exception by refactoring answer from API Wildberries! URL: '{url}'\n   Exception description: {ex}\n")
+                f"\n[Error] [{get_tg_user_request_time()}] | Exception by refactoring answer from API Wildberries! URL: '{url}'\n   Exception description: {ex}\n")
         wb.set_feedbacks(["error3"])
 
     else:
         with open(f"logs/log_WB.txt", "a+", encoding="utf-8") as f:
             f.write(
-                f"\n[Info] {datetime.datetime.today().strftime('%d-%m-%Y %H-%M')} : Status of request to API: {exception_code}! Number of attempt: {number_of_attempt}. URL: '{url}'\n")
+                f"\n[Info] [{get_tg_user_request_time()}] : Status of request to API: {exception_code}! Number of attempt: {number_of_attempt}. URL: '{url}'\n")
         wb.raise_attempt()
         time.sleep(1)
 

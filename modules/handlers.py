@@ -76,24 +76,6 @@ async def process_message(message: Message, state: FSMContext):
         await message.reply(BOT_MESSAGE_NO_URL)
 
 
-
-async def stress_test(neuro_classifier, comments, count):
-    tasks = [asyncio.to_thread(neuro_classifier.classify_data, comments) for _ in range(count)]
-    results = await asyncio.gather(*tasks)
-    return results
-
-async def get_results(neuro_classifier, comments):
-    results = []
-    stress_test_results = await stress_test(neuro_classifier, comments, 20)  # Вызываем stress_test синхронно и дожидаемся результата
-    for mood in stress_test_results:  # Обходим результаты stress_test
-        results.append(mood)  # Добавляем каждый результат в список
-    return results  # Возвращаем список результатов
-
-
-
-
-
-
 async def process_response(message: Message, state: FSMContext, url: str, progress_message):
     comments = get_wb_comments(url, PARSER_MAX_COMMENTS)
 
@@ -129,4 +111,3 @@ async def process_response(message: Message, state: FSMContext, url: str, progre
         await message.reply(str(result))
         await progress_message.delete()
         await state.clear()
-

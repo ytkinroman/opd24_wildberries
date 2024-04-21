@@ -43,19 +43,19 @@ async def process_response(message: Message, state: FSMContext, url: str, progre
 
     if len(comments) == 1:
         if comments[0] == "error1":
-            logging.info(f"[Error] [WB] User {message.from_user.username} (ID: {message.from_user.id}), send message: {message.text}, description: No comments, date: {get_tg_user_request_time()};")
+            logging.warning(f"[Error] [WB] User {message.from_user.username} (ID: {message.from_user.id}), send message: {message.text}, description: No comments, date: {get_tg_user_request_time()};")
             await progress_message.delete()
             await asyncio.sleep(1)
             await message.reply(BOT_MESSAGE_ERROR_NO_COMMENTS)
             await state.clear()
         elif comments[0] == "error2":
-            logging.info(f"[Error] [WB] User {message.from_user.username} (ID: {message.from_user.id}), send message: {message.text}, description: Invalid url, date: {get_tg_user_request_time()};")
+            logging.warning(f"[Error] [WB] User {message.from_user.username} (ID: {message.from_user.id}), send message: {message.text}, description: Invalid url, date: {get_tg_user_request_time()};")
             await progress_message.delete()
             await asyncio.sleep(1)
             await message.reply(BOT_MESSAGE_ERROR_NO_URL)
             await state.clear()
         elif comments[0] == "error3":
-            logging.info(f"[Error] [WB] User {message.from_user.username} (ID: {message.from_user.id}), send message: {message.text}, description: Unkown error, date: {get_tg_user_request_time()};")
+            logging.warning(f"[Error] [WB] User {message.from_user.username} (ID: {message.from_user.id}), send message: {message.text}, description: Unkown error, date: {get_tg_user_request_time()};")
             await progress_message.delete()
             await asyncio.sleep(1)
             await message.reply(BOT_MESSAGE_ERROR_UNKOWN)
@@ -63,11 +63,11 @@ async def process_response(message: Message, state: FSMContext, url: str, progre
     else:
         comments = remove_newline(replace_emoji(comments))
 
-        mood = await asyncio.to_thread(neuro_classifier.classify_data, comments)
+        mood = await asyncio.to_thread(neuro_classifier.classify_data, comments[:NEURO_CLASSIFIER__MAX_COMMENTS])
         result = get_result_message(mood, API_queue)
 
         if result == "error3" or result == "error4":
-            logging.info(f"[Error] [ChatGPT] User {message.from_user.username} (ID: {message.from_user.id}), send message: {message.text}, description: Unkown error, date: {get_tg_user_request_time()};")
+            logging.warning(f"[Error] [ChatGPT] User {message.from_user.username} (ID: {message.from_user.id}), send message: {message.text}, description: Unkown error, date: {get_tg_user_request_time()};")
             await progress_message.delete()
             await asyncio.sleep(1)
             await message.reply(BOT_MESSAGE_ERROR_NO_RESULT_GPT)

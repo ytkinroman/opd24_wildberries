@@ -2,8 +2,9 @@
 /config.py
 /venv/
 /.idea/
-/logs/log_WB.txt
 /models/ruBERT_sentiment_classifier_upd.pkl
+/logs/log_WB.txt
+/logs/log_GPT.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

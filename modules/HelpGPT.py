@@ -2,7 +2,7 @@
 Модуль для работы с GPT API.
 
 Author: Al0n1
-Version: 1.0.0
+Version: 1.0.1
 
 Description:
 Этот модуль позволяет посылать запрос и получать ответ от GPT.
@@ -12,6 +12,7 @@ Description:
 import requests
 import datetime
 import tiktoken
+from config import PROXY_OPENAI_URL
 
 
 INSTRUCTION = f"""Я передаю тебе список содержащий словари, в которых ключ 'label' — означает тональность текста, 'score' — точность определения тональности и 'text' — означает сам комментарий. 
@@ -21,9 +22,7 @@ INSTRUCTION = f"""Я передаю тебе список содержащий �
 В своём ответе можешь противпоставлять некоторые факты друг другу, например большинство клиентов говорят, что размер идеальный, но некоторые говорят, что размер не подошёл, можешь их противопоставить:  "В основном все хвалят размер, потому что он им подошёл, но есть часть клиентов, которым размер не подошёл.".
 Не пытайся юлить, будь честен и говори прямо, ведь если ты будешь юлить, то это будет значить, что ты обманываешь наших клиентов.
 Твой ответ должен содержать МАКСИМУМ 200 слов. Переноси текст в ответе на новую строку, только если это новый абзац."""
-USERNAME = 'Q44Xaf'
-PASSWORD = '9u6r6j'
-OPENAI_PROXY_URL = f"http://{USERNAME}:{PASSWORD}@186.179.51.180:8000"
+
 TOKENS_LIMIT = 10000
 ENCODER = tiktoken.encoding_for_model("gpt-3.5-turbo")
 
@@ -41,12 +40,10 @@ def exception_handler(exception_code: str, api_key: str = "", ex: str = ""):
         None
     """
     if exception_code == "error3":
-        print("Возникла ошибка при обращении к GPT. Смотри логи.")
         with open(f"logs/log_GPT.txt", "a+", encoding="utf-8") as f:
             f.write(
                 f"\n[Error] {datetime.datetime.today().strftime('%d-%m-%Y %H-%M')} : Exception by request to GPT!\n    {ex}\n")
     elif exception_code == "error4":
-        print("GPT вернул ошибку. Смотри логи.")
         with open(f"logs/log_GPT.txt", "a+", encoding="utf-8") as f:
             f.write(
                 f"\n[Error] {datetime.datetime.today().strftime('%d-%m-%Y %H-%M')} : Exception from GPT! Current API key: [{api_key}]\n    Exception description: {ex}\n")
@@ -123,7 +120,7 @@ def get_result_message(comments: list, API_queue):
                     "https://api.openai.com/v1/chat/completions",
                     headers={"Authorization": f"Bearer {api_key}"},
                     json={"messages": message, "model": "gpt-3.5-turbo"},
-                    proxies={"http": OPENAI_PROXY_URL, "https": OPENAI_PROXY_URL}
+                    proxies={"http": PROXY_OPENAI_URL, "https": PROXY_OPENAI_URL}
                 )
 
                 response_data = response.json()
@@ -133,7 +130,6 @@ def get_result_message(comments: list, API_queue):
                 elif "error" in response_data:
                     exception_handler(exception_code="error4", api_key=api_key, ex=response_data['error']['message'])  # ГПТ вернул ошибку
                     if number_of_attempt <= len(API_queue.get_queue()):
-                        print(API_queue.get_queue())
                         API_queue.move_head_to_tail()
                     else:
                         return "error4"

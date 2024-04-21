@@ -1,16 +1,24 @@
+"""
+Класс очереди API.
+
+Author: Al0n1
+Version: 1.0.0
+"""
+
+
 class APIQueue:
-    def init(self, API_list: list):
-        self.queue: list = API_list
-        self.head: str = self.queue[0]
+    def __init__(self, API_list: list):
+        self.__queue: list = API_list
+        self.__head: str = self.__queue[0]
 
     def get_queue(self) -> list:
-        return self.queue
+        return self.__queue
 
     def get_head(self) -> str:
-        return self.head
+        return self.__head
 
     def set_head(self, key: str):
-        self.head = key
+        self.__head = key
 
     def set_queue(self, queue: list):
         self.__queue = queue

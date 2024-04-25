@@ -1,6 +1,7 @@
 import datetime
 import re
 import emoji
+import random
 
 
 def get_tg_user_request_time() -> str:
@@ -35,3 +36,9 @@ def remove_newline(sentences):
         cleaned_sentence = re.sub(r'\n', '', sentence)
         cleaned_sentences.append(cleaned_sentence)
     return cleaned_sentences
+
+
+def get_random_message(messages_list: list[str]) -> str:
+    """Функция возвращает случайное значение из списка."""
+    return random.choice(messages_list)
+

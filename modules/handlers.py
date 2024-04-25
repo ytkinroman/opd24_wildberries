@@ -5,7 +5,7 @@ from aiogram import Router
 from aiogram.types import Message
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
-from modules.utils import get_tg_user_request_time, extract_url, remove_newline, replace_emoji
+from modules.utils import get_tg_user_request_time, extract_url, remove_newline, replace_emoji, get_random_message
 from modules.NeuroClassifier import NeuroClassifier
 from modules.WBParser import get_wb_comments
 from modules.HelpGPT import get_result_message
@@ -34,12 +34,12 @@ async def process_message(message: Message, state: FSMContext):
                 return
 
             await state.set_state(StatesForm.waiting_for_processing)
-            progress_message = await message.reply(BOT_MESSAGE_WAIT)
+            progress_message = await message.reply(get_random_message(BOT_MESSAGE_WAIT))
             asyncio.create_task(process_response(message, state, url, progress_message))
         else:
-            await message.reply(BOT_MESSAGE_NO_URL)
+            await message.reply(get_random_message(BOT_MESSAGE_NO_URL))
     else:
-        await message.reply(BOT_MESSAGE_NO_URL)
+        await message.reply(get_random_message(BOT_MESSAGE_NO_URL))
 
 
 async def process_response(message: Message, state: FSMContext, url: str, progress_message):

@@ -4,11 +4,13 @@ from aiogram import Bot, Dispatcher
 from aiogram.filters import Command
 from modules.handlers import router
 from modules.commands.basic_commands import start_cmd, help_cmd, info_cmd, start_bot, stop_bot
+from aiogram.client.default import DefaultBotProperties
+from aiogram.enums.parse_mode import ParseMode
 from config import BOT_TOKEN
 
 
 async def main():
-    bot = Bot(token=BOT_TOKEN)
+    bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.MARKDOWN))
     dp = Dispatcher()
 
     dp.include_router(router)

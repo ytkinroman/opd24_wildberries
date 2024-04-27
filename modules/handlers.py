@@ -5,7 +5,7 @@ from aiogram import Router
 from aiogram.types import Message
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
-from modules.utils import get_tg_user_request_time, extract_url, remove_newline, replace_emoji, get_random_message
+from modules.utils import get_tg_user_request_time, extract_url, remove_newline, replace_emoji, get_random_message, remove_double_spaces
 from modules.NeuroClassifier import NeuroClassifier
 from modules.WBParser import get_wb_comments
 from modules.HelpGPT import get_result_message
@@ -46,39 +46,41 @@ async def process_response(message: Message, state: FSMContext, url: str, progre
     comments = get_wb_comments(url, PARSER_MAX_COMMENTS)
     if len(comments) == 1:
         if comments[0] == "error1":
-            logging.warning(f"[WARNING] [WB] User {message.from_user.username} (ID: {message.from_user.id}), send message: {message.text}, description: No comments, date: {get_tg_user_request_time()};")
+            logging.warning(f"[WARNING] [WB] User {message.from_user.username} (ID: {message.from_user.id}), send message: \"{message.text}\", description: \"No comments\", date: {get_tg_user_request_time()};")
             await progress_message.delete()
-            #await asyncio.sleep(2)
+            # await asyncio.sleep(2)
             await message.reply(BOT_MESSAGE_ERROR_NO_COMMENTS)
             await state.clear()
         elif comments[0] == "error2":
-            logging.warning(f"[WARNING] [WB] User {message.from_user.username} (ID: {message.from_user.id}), send message: {message.text}, description: Invalid url, date: {get_tg_user_request_time()};")
+            logging.warning(f"[WARNING] [WB] User {message.from_user.username} (ID: {message.from_user.id}), send message: \"{message.text}\", description: \"Invalid url\", date: {get_tg_user_request_time()};")
             await progress_message.delete()
-            #await asyncio.sleep(2)
+            # await asyncio.sleep(2)
             await message.reply(BOT_MESSAGE_ERROR_NO_URL)
             await state.clear()
         elif comments[0] == "error3":
-            logging.warning(f"[WARNING] [WB] User {message.from_user.username} (ID: {message.from_user.id}), send message: {message.text}, description: Unkown error, date: {get_tg_user_request_time()};")
+            logging.warning(f"[WARNING] [WB] User {message.from_user.username} (ID: {message.from_user.id}), send message: \"{message.text}\", description: \"Unkown error\", date: {get_tg_user_request_time()};")
             await progress_message.delete()
-            #await asyncio.sleep(2)
+            # await asyncio.sleep(2)
             await message.reply(BOT_MESSAGE_ERROR_UNKOWN)
             await state.clear()
     else:
         comments = remove_newline(replace_emoji(comments))
+        comments = remove_double_spaces(comments)
         mood = await asyncio.to_thread(neuro_classifier.classify_data, comments[:NEURO_CLASSIFIER__MAX_COMMENTS])
         result = get_result_message(mood, API_queue)
 
         if result == "error3" or result == "error4":
             logging.error(f"[ERROR] [ChatGPT] User {message.from_user.username} (ID: {message.from_user.id}), send message: {message.text}, comments: {mood[:5]}..., description: Unkown ChatGPT error, date: {get_tg_user_request_time()};")
             await progress_message.delete()
-            #await asyncio.sleep(1)
+            # await asyncio.sleep(1)
             await message.reply(BOT_MESSAGE_ERROR_NO_RESULT_GPT)
 
             # получить комменты
 
             await state.clear()
         else:
-            logging.info(f"[RESPONSE] User {message.from_user.username} (ID: {message.from_user.id}), send message: \"{message.text}\", comments: {mood[:3]}..., result: \"{result[:125]}...\", date: {get_tg_user_request_time()};")
+            # logging.info(f"[RESPONSE] User {message.from_user.username} (ID: {message.from_user.id}), send message: \"{message.text}\", comments: {mood[:4]}..., result: \"{result[:150]}...\", date: {get_tg_user_request_time()};")
+            logging.info(f"[RESPONSE] User {message.from_user.username} (ID: {message.from_user.id}), send message: \"{message.text}\", comments: \"{mood}\", result: \"{result}\", date: {get_tg_user_request_time()};")
             await message.reply(result)
             await progress_message.delete()
             await state.clear()

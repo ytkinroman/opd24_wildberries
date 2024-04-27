@@ -2,7 +2,7 @@ import asyncio
 import logging
 from aiogram import Bot
 from aiogram.types import Message
-from config import BOT_MESSAGE_WELCOME, BOT_MESSAGE_HELP, BOT_MESSAGE_INFORMATION, BOT_MESSAGE_START, BOT_MESSAGE_STOP, ADMIN_ID
+from config import BOT_MESSAGE_WELCOME, BOT_MESSAGE_HELP, BOT_MESSAGE_INFORMATION, BOT_MESSAGE_START, BOT_MESSAGE_STOP, ADMIN_ID, BOT_MESSAGE_PRIVACY_POLICY
 from modules.commands.bacis_commands_list import basic_commands_list
 from modules.utils import get_tg_user_request_time
 
@@ -32,3 +32,8 @@ async def start_bot(bot: Bot) -> None:
 
 async def stop_bot(bot: Bot) -> None:
     await bot.send_message(ADMIN_ID, text=BOT_MESSAGE_STOP)
+
+
+async def privacy_policy_cmd(message: Message) -> None:
+    logging.info(f"[COMMAND] User {message.from_user.username} (ID: {message.from_user.id}) has read the privacy policy, date: {get_tg_user_request_time()};")
+    await message.reply(BOT_MESSAGE_PRIVACY_POLICY)

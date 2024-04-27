@@ -9,6 +9,10 @@ async def basic_commands_list(bot: Bot):
             description="Начать работу"
         ),
         BotCommand(
+            command="privacy",
+            description="Политика конфиденциальности"
+        ),
+        BotCommand(
             command="help",
             description="Помощь"
         ),

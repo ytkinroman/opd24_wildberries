@@ -66,7 +66,7 @@ async def process_response(message: Message, state: FSMContext, url: str, progre
     else:
         comments = remove_newline(replace_emoji(comments))
         comments = remove_double_spaces(comments)
-        mood = await asyncio.to_thread(neuro_classifier.classify_data, comments[:NEURO_CLASSIFIER__MAX_COMMENTS])
+        mood = await asyncio.to_thread(neuro_classifier.classify_data, comments[:NEURO_CLASSIFIER_MAX_COMMENTS])
         result = get_result_message(mood, API_queue)
 
         if result == "error3" or result == "error4":

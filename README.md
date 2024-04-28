@@ -21,7 +21,7 @@ git clone https://github.com/ytkinroman/opd24_wildberries.git
 ```
 pip install -r requirements.txt
 ```
-3. Создайте файл конфигурации config.py и укажите в нем токен вашего Telegram-бота:
+3. Создайте файл конфигурации *config.py* и укажите в нем токен вашего Telegram-бота:
 ```python
 BOT_TOKEN = 'YOUR_TELEGRAM_BOT_TOKEN'
 ```
@@ -52,4 +52,4 @@ BOT_TOKEN = 'YOUR_TELEGRAM_BOT_TOKEN'
 ```
 
 # Политика конфиденциальность 
-*В разработке ...*
+*to be continued ...*

@@ -17,9 +17,9 @@ async def main():
     dp.startup.register(start_bot)
     dp.shutdown.register(stop_bot)
 
-    dp.message.register(start_cmd, Command(commands="start"))
-    dp.message.register(help_cmd, Command(commands="help"))
-    dp.message.register(info_cmd, Command(commands="info"))
+    dp.message.register(start_cmd, Command(commands=["start", "run"]))
+    dp.message.register(help_cmd, Command(commands=["help", "support"]))
+    dp.message.register(info_cmd, Command(commands=["info", "information"]))
     dp.message.register(privacy_policy_cmd, Command(commands=["privacy", "policy", "privacy_policy"]))
 
     await bot.delete_webhook(drop_pending_updates=True)

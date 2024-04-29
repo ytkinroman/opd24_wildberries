@@ -2,7 +2,7 @@
 Модуль для работы с GPT API.
 
 Author: Al0n1
-Version: 1.0.4
+Version: 1.0.7
 
 Description:
 Этот модуль позволяет посылать запрос и получать ответ от GPT.
@@ -12,11 +12,12 @@ Description:
 import requests
 import datetime
 import tiktoken
-from config import PROXY_OPENAI_URL
+from config import PROXY_OPENAI_URL, GPT_TEXT_TOKENS_LIMIT
 
 
 INSTRUCTION = """Я передаю тебе список содержащий словари, в которых ключ 'label' — означает тональность текста, 'score' — точность определения тональности и 'text' — означает сам комментарий. 
-Твоя задача проанализировать все комментарии и вывести из этих комментариев основные плюсы и минусы товара в виде непронумерованного списка. Ты делаешь ответ для потенциального покупателя этого товара.
+Твоя задача проанализировать все комментарии и вывести из этих комментариев основные плюсы и минусы товара в виде непронумерованного списка. Твоя задача проанализировать все комментарии и вывести из этих комментариев основные плюсы и минусы товара в виде непронумерованного списка. Твой ответ передаётся потенциальному покупателю этого товара.  
+Ты генерируешь ответ для потенциального покупателя этого товара, поэтому веди себя как продавец-консультант.
 Шаблон ответа:
     Здесь небольшое описание продукта
     
@@ -44,7 +45,6 @@ INSTRUCTION = """Я передаю тебе список содержащий с
 Не пытайся юлить, будь честен и отвечай прямо, ведь если ты будешь юлить, то это будет значить, что ты обманываешь пользователей.
 Твой ответ должен содержать МАКСИМУМ 200 слов. Переноси текст в ответе на новую строку, только если это новый абзац."""
 
-TOKENS_LIMIT = 10000  # Может перенести в config?
 ENCODER = tiktoken.encoding_for_model("gpt-3.5-turbo")
 
 
@@ -81,8 +81,8 @@ def split_comments(comments: list, tokens_quantity: str) -> list:
     Returns:
         list: Разделённые подсписки комментариев.
     """
-    while tokens_quantity > TOKENS_LIMIT:
-        if tokens_quantity - TOKENS_LIMIT < 500:
+    while tokens_quantity > GPT_TEXT_TOKENS_LIMIT:
+        if tokens_quantity - GPT_TEXT_TOKENS_LIMIT < 500:
             comments.pop()
         else:
             comments = comments[:-10]
@@ -127,7 +127,7 @@ def get_result_message(comments: list, API_queue):
             tokens = ENCODER.encode(str(comments))
             tokens_quantity = len(tokens)
 
-            if tokens_quantity > TOKENS_LIMIT:
+            if tokens_quantity > GPT_TEXT_TOKENS_LIMIT:
                 comments = split_comments(comments, tokens_quantity)
 
             message = create_message(comments)

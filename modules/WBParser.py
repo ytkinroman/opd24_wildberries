@@ -12,7 +12,7 @@ Description:
 import requests
 import json
 import time
-from .utils import get_tg_user_request_time
+from modules.utils import get_tg_user_request_time
 
 
 def remove_params(url: str) -> str:

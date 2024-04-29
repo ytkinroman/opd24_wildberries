@@ -43,7 +43,7 @@ async def process_message(message: Message, state: FSMContext):
 
 
 async def process_response(message: Message, state: FSMContext, url: str, progress_message):
-    comments = get_wb_comments(url, PARSER_MAX_COMMENTS)
+    comments = get_wb_comments(url, WB_PARSER_MAX_COMMENTS)
     if len(comments) == 1:
         if comments[0] == "error1":
             logging.warning(f"[WARNING] [WB] User {message.from_user.username} (ID: {message.from_user.id}), send message: \"{message.text}\", description: \"No comments\", date: {get_tg_user_request_time()};")

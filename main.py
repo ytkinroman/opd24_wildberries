@@ -2,10 +2,10 @@ import asyncio
 import logging
 from aiogram import Bot, Dispatcher
 from aiogram.filters import Command
-from modules.handlers import router
-from modules.commands.basic_commands import start_cmd, help_cmd, info_cmd, start_bot, stop_bot, privacy_policy_cmd
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums.parse_mode import ParseMode
+from modules.commands.basic_commands import start_cmd, help_cmd, info_cmd, start_bot, stop_bot, privacy_policy_cmd
+from modules.handlers import router
 from config import BOT_TOKEN
 
 

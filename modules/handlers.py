@@ -2,7 +2,7 @@ import asyncio
 import logging
 from config import *
 from aiogram import Router
-from aiogram.types import Message
+from aiogram.types import Message, FSInputFile
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
 from modules.utils import get_tg_user_request_time, extract_url, remove_newline, replace_emoji, get_random_message, remove_double_spaces
@@ -67,34 +67,40 @@ async def process_response(message: Message, state: FSMContext, url: str, progre
     else:
         comments = remove_newline(replace_emoji(comments))
         comments = remove_double_spaces(comments)
+
         mood = await asyncio.to_thread(neuro_classifier.classify_data, comments[:NEURO_CLASSIFIER_MAX_COMMENTS])
+
         result = get_result_message(mood, API_queue)
+
+        result_file_json = await get_generation_json(str(message.from_user.username), str(message.from_user.id), mood, get_tg_user_request_time(), JSON_SAVE_PATH)
 
         if result == "error3" or result == "error4":
             logging.error(f"[ERROR] [ChatGPT] User {message.from_user.username} (ID: {message.from_user.id}), send message: {message.text}, comments: {mood[:5]}..., description: Unkown ChatGPT error, date: {get_tg_user_request_time()};")
-
-            # result_file_json = generate_json(str(message.from_user.username), str(message.from_user.id), mood, get_tg_user_request_time(), JSON_SAVE_PATH)
-            # await asyncio.sleep(1)
-
             await message.reply(BOT_MESSAGE_ERROR_NO_RESULT_GPT)
 
-            # ТУТ ОТПРАВИТЬ ПОЛЬЗОВАТЕЛЮ ФАЙЛ !
-            # Позже добавлю.
+            if result_file_json == "ERROR_JSON":
+                logging.info(f"[ERROR] [JSON] User {message.from_user.username} (ID: {message.from_user.id}), send message: \"{message.text}\", description: User didn't get the JSON file, date: {get_tg_user_request_time()};")
+            else:
+                json_document = FSInputFile(path=result_file_json)
+                await message.reply_document(document=json_document, caption=f"Результат классификации тональности текста {result_file_json}")
 
+            await asyncio.sleep(1)
             await progress_message.delete()
             await state.clear()
         else:
+            # Краткая форма:
             # logging.info(f"[RESPONSE] User {message.from_user.username} (ID: {message.from_user.id}), send message: \"{message.text}\", comments: {mood[:4]}..., result: \"{result[:150]}...\", date: {get_tg_user_request_time()};")
             logging.info(f"[RESPONSE] User {message.from_user.username} (ID: {message.from_user.id}), send message: \"{message.text}\", comments: \"{mood}\", result: \"{result}\", date: {get_tg_user_request_time()};")
 
-            result_file_json = get_generation_json(str(message.from_user.username), str(message.from_user.id), mood, get_tg_user_request_time(), JSON_SAVE_PATH)
-
             await message.reply(result)
 
-            # ТУТ ОТПРАВИТЬ ПОЛЬЗОВАТЕЛЮ ФАЙЛ !
-            # Позже добавлю.
-            logging.info(f"[JSON] User {message.from_user.username} (ID: {message.from_user.id}), got the json: \"{result_file_json}\", date: {get_tg_user_request_time()};")
-            print(result_file_json)
+            if result_file_json == "ERROR_JSON":
+                logging.info(f"[ERROR] [JSON] User {message.from_user.username} (ID: {message.from_user.id}), send message: \"{message.text}\", description: User didn't get the JSON file, date: {get_tg_user_request_time()};")
+            else:
+                logging.info(f"[JSON] User {message.from_user.username} (ID: {message.from_user.id}), send message: \"{message.text}\", got the json: \"{result_file_json}\", date: {get_tg_user_request_time()};")
+                json_document = FSInputFile(path=result_file_json)
+                await message.reply_document(document=json_document, caption=f"Результат классификации тональности текста {result_file_json}")
 
+            await asyncio.sleep(1)
             await progress_message.delete()
             await state.clear()

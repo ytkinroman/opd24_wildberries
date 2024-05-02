@@ -3,9 +3,8 @@
 /venv/
 /.idea/
 /models/ruBERT_sentiment_classifier_upd.pkl
-/logs/log_WB.txt
-/logs/log_GPT.txt
-/json_result/
+/logs/
+/json_user_results/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

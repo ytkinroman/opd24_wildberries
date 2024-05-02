@@ -10,6 +10,7 @@ from modules.NeuroClassifier import NeuroClassifier
 from modules.WBParser import get_wb_comments
 from modules.HelpGPT import get_result_message
 from modules.APIQueue import APIQueue
+# from modules.JsonCreator import get_json
 
 router = Router()
 neuro_classifier = NeuroClassifier(NEURO_CLASSIFIER_PATH)
@@ -71,16 +72,27 @@ async def process_response(message: Message, state: FSMContext, url: str, progre
 
         if result == "error3" or result == "error4":
             logging.error(f"[ERROR] [ChatGPT] User {message.from_user.username} (ID: {message.from_user.id}), send message: {message.text}, comments: {mood[:5]}..., description: Unkown ChatGPT error, date: {get_tg_user_request_time()};")
-            await progress_message.delete()
+
+            # result_file_json = get_json(str(message.from_user.username), str(message.from_user.id), mood, get_tg_user_request_time(), JSON_SAVE_PATH)
             # await asyncio.sleep(1)
+
             await message.reply(BOT_MESSAGE_ERROR_NO_RESULT_GPT)
 
-            # получить комменты
+            # ТУТ ОТПРАВИТЬ ПОЛЬЗОВАТЕЛЮ ФАЙЛ !
+            # Позже добавлю.
 
+            await progress_message.delete()
             await state.clear()
         else:
             # logging.info(f"[RESPONSE] User {message.from_user.username} (ID: {message.from_user.id}), send message: \"{message.text}\", comments: {mood[:4]}..., result: \"{result[:150]}...\", date: {get_tg_user_request_time()};")
             logging.info(f"[RESPONSE] User {message.from_user.username} (ID: {message.from_user.id}), send message: \"{message.text}\", comments: \"{mood}\", result: \"{result}\", date: {get_tg_user_request_time()};")
+
+            # result_file_json = get_json(str(message.from_user.username), str(message.from_user.id), mood, get_tg_user_request_time(), JSON_SAVE_PATH)
+
             await message.reply(result)
+
+            # ТУТ ОТПРАВИТЬ ПОЛЬЗОВАТЕЛЮ ФАЙЛ !
+            # Позже добавлю.
+
             await progress_message.delete()
             await state.clear()

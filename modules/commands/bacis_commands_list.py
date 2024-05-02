@@ -19,6 +19,10 @@ async def basic_commands_list(bot: Bot):
         BotCommand(
             command="info",
             description="Информация"
+        ),
+        BotCommand(
+            command="stickers",
+            description="Получить набор стикеров"
         )
     ]
 

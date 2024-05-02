@@ -1,10 +1,11 @@
-# my file
+# My files
 /config.py
 /venv/
 /.idea/
 /models/ruBERT_sentiment_classifier_upd.pkl
 /logs/log_WB.txt
 /logs/log_GPT.txt
+/json_result/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

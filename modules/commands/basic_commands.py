@@ -37,3 +37,9 @@ async def stop_bot(bot: Bot) -> None:
 async def privacy_policy_cmd(message: Message) -> None:
     logging.info(f"[COMMAND] User {message.from_user.username} (ID: {message.from_user.id}) has read the privacy policy, date: {get_tg_user_request_time()};")
     await message.reply(BOT_MESSAGE_PRIVACY_POLICY)
+
+
+async def stickers_cmd(message: Message) -> None:
+    logging.info(f"[COMMAND] User {message.from_user.username} (ID: {message.from_user.id}) got the stickers, date: {get_tg_user_request_time()};")
+    # ТУТ ВСТАВИТЬ СООБЩЕНИЕ СО СТИКЕРАМИ !
+    await message.reply("STICKERS PACK !")

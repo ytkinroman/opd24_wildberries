@@ -84,8 +84,8 @@ async def process_response(message: Message, state: FSMContext, url: str, progre
                 json_document = FSInputFile(path=result_file_json)
                 await message.reply_document(document=json_document, caption=f"Результат классификации тональности текста {result_file_json}")
 
-            await asyncio.sleep(1)
             await progress_message.delete()
+            await asyncio.sleep(1)
             await state.clear()
         else:
             # Краткая форма:
@@ -99,8 +99,8 @@ async def process_response(message: Message, state: FSMContext, url: str, progre
             else:
                 logging.info(f"[JSON] User {message.from_user.username} (ID: {message.from_user.id}), send message: \"{message.text}\", got the json: \"{result_file_json}\", date: {get_tg_user_request_time()};")
                 json_document = FSInputFile(path=result_file_json)
-                await message.reply_document(document=json_document, caption=f"Результат классификации тональности текста {result_file_json}")
+                await message.reply_document(document=json_document, caption=f"Результат классификации тональности текста {get_tg_user_request_time()}")
 
-            await asyncio.sleep(1)
             await progress_message.delete()
+            await asyncio.sleep(1)
             await state.clear()

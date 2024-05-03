@@ -13,16 +13,16 @@ async def basic_commands_list(bot: Bot):
             description="Политика конфиденциальности"
         ),
         BotCommand(
+            command="stickers",
+            description="Получить набор стикеров"
+        ),
+        BotCommand(
             command="help",
             description="Помощь"
         ),
         BotCommand(
             command="info",
             description="Информация"
-        ),
-        BotCommand(
-            command="stickers",
-            description="Получить набор стикеров"
         )
     ]
 

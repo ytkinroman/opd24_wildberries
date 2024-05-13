@@ -22,7 +22,7 @@ async def help_cmd(message: Message) -> None:
 async def info_cmd(message: Message) -> None:
     await asyncio.sleep(1)
     logging.info(f"[COMMAND] User {message.from_user.username} (ID: {message.from_user.id}) looked at the information, date: {get_tg_user_request_time()};")
-    await message.reply(BOT_MESSAGE_INFORMATION)
+    await message.reply(BOT_MESSAGE_INFORMATION, parse_mode='HTML')
 
 
 async def start_bot(bot: Bot) -> None:
@@ -36,7 +36,7 @@ async def stop_bot(bot: Bot) -> None:
 
 async def privacy_policy_cmd(message: Message) -> None:
     logging.info(f"[COMMAND] User {message.from_user.username} (ID: {message.from_user.id}) has read the privacy policy, date: {get_tg_user_request_time()};")
-    await message.reply(BOT_MESSAGE_PRIVACY_POLICY)
+    await message.reply(BOT_MESSAGE_PRIVACY_POLICY, parse_mode='HTML')
 
 
 async def stickers_cmd(message: Message) -> None:

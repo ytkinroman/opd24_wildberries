@@ -82,6 +82,7 @@ async def process_response(message: Message, state: FSMContext, url: str, progre
                 logging.info(f"[ERROR] [JSON] User {message.from_user.username} (ID: {message.from_user.id}), send message: \"{message.text}\", description: User didn't get the JSON file, date: {get_tg_user_request_time()};")
             else:
                 json_document = FSInputFile(path=result_file_json)
+                logging.info(f"[JSON] User {message.from_user.username} (ID: {message.from_user.id}) got the json: \"{result_file_json}\", date: {get_tg_user_request_time()};")
                 await message.reply_document(document=json_document, caption=f"Результат классификации тональности текста {result_file_json}")
 
             await progress_message.delete()
@@ -97,7 +98,7 @@ async def process_response(message: Message, state: FSMContext, url: str, progre
             if result_file_json == "ERROR_JSON":
                 logging.info(f"[ERROR] [JSON] User {message.from_user.username} (ID: {message.from_user.id}), send message: \"{message.text}\", description: User didn't get the JSON file, date: {get_tg_user_request_time()};")
             else:
-                logging.info(f"[JSON] User {message.from_user.username} (ID: {message.from_user.id}), send message: \"{message.text}\", got the json: \"{result_file_json}\", date: {get_tg_user_request_time()};")
+                logging.info(f"[JSON] User {message.from_user.username} (ID: {message.from_user.id}) got the json: \"{result_file_json}\", date: {get_tg_user_request_time()};")
                 json_document = FSInputFile(path=result_file_json)
                 await message.reply_document(document=json_document, caption=f"Результат классификации тональности текста {get_tg_user_request_time()}")
 

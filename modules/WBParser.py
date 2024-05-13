@@ -2,7 +2,7 @@
 Модуль для работы с Wildberries API.
 
 Author: Al0n1
-Version: 1.0.2
+Version: 1.0.4
 
 Description:
 Этот модуль позволяет получать отзывы о товарах с сайта Wildberries.
@@ -11,8 +11,8 @@ Description:
 
 import requests
 import json
-import datetime
 import time
+from modules.utils import get_tg_user_request_time
 
 
 def remove_params(url: str) -> str:
@@ -190,27 +190,27 @@ def exception_handler(wb: WB, exception_code: str, url: str, ex: str = "", numbe
         None
     """
 
-    if exception_code == "error2":
+    """if exception_code == "error2":
         with open(f"logs/log_WB.txt", "a+", encoding="utf-8") as f:
             f.write(
-                f"\n[Error] {datetime.datetime.today().strftime('%d-%m-%Y %H-%M')} | Invalid URL: '{url}'\n")
+                f"\n[Error] [{get_tg_user_request_time()}] | Invalid URL: '{url}'\n")"""
 
-    elif exception_code == "error1":
-        with open(f"logs/log_WB.txt", "a+", encoding="utf-8") as f:
+    if exception_code == "error1":
+        """with open(f"logs/log_WB.txt", "a+", encoding="utf-8") as f:
             f.write(
-                f"\n[Error] {datetime.datetime.today().strftime('%d-%m-%Y %H-%M')} | No comments! URL: '{url}'\n")
+                f"\n[Error] [{get_tg_user_request_time()}] | No comments! URL: '{url}'\n")"""
         wb.set_feedbacks(["error1"])
 
     elif exception_code == "error3":
         with open(f"logs/log_WB.txt", "a+", encoding="utf-8") as f:
             f.write(
-                f"\n[Error] {datetime.datetime.today().strftime('%d-%m-%Y %H-%M')} | Exception by refactoring answer from API Wildberries! URL: '{url}'\n   Exception description: {ex}\n")
+                f"\n[Error] [{get_tg_user_request_time()}] | Exception by refactoring answer from API Wildberries! URL: '{url}'\n   Exception description: {ex}\n")
         wb.set_feedbacks(["error3"])
 
     else:
         with open(f"logs/log_WB.txt", "a+", encoding="utf-8") as f:
             f.write(
-                f"\n[Info] {datetime.datetime.today().strftime('%d-%m-%Y %H-%M')} : Status of request to API: {exception_code}! Number of attempt: {number_of_attempt}. URL: '{url}'\n")
+                f"\n[Info] [{get_tg_user_request_time()}] : Status of request to API: {exception_code}! Number of attempt: {number_of_attempt}. URL: '{url}'\n")
         wb.raise_attempt()
         time.sleep(1)
 
@@ -240,7 +240,7 @@ def check_url(url: str, wb: WB) -> bool:
     if its_wildberries and article_is_digit and ImtId_exist:
         return True
     else:
-        exception_handler(wb, exception_code="error2", url=url)
+        #exception_handler(wb, exception_code="error2", url=url)
         return False
 
 
@@ -286,7 +286,6 @@ def get_wb_comments(url: str, size: int = 10) -> list:
                         break
                 except Exception as ex:
                     exception_handler(wb, exception_code="error3", url=url, ex=ex)
-
                     comments = wb.get_feedbacks()
     else:
         comments.append("error2")

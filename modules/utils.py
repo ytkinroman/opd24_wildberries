@@ -1,11 +1,12 @@
 import datetime
 import re
 import emoji
+import random
 
 
 def get_tg_user_request_time() -> str:
     """Получаем время запроса."""
-    current_time = datetime.datetime.now().strftime("%H:%M:%S %d/%m/%Y")
+    current_time = datetime.datetime.now().strftime("%H:%M:%S (%d/%m/%Y)")
     return current_time
 
 
@@ -35,3 +36,20 @@ def remove_newline(sentences):
         cleaned_sentence = re.sub(r'\n', '', sentence)
         cleaned_sentences.append(cleaned_sentence)
     return cleaned_sentences
+
+
+def get_random_message(messages_list: tuple[str]) -> str:
+    """Функция возвращает случайное значение из картежа."""
+    message = random.choice(messages_list)
+    return message
+
+
+def remove_double_spaces(lst: list[str]) -> list[str]:
+    """
+    Удаляет двойные пробелы и пробелы в конце строк из списка.
+    """
+    cleaned_list = []
+    for string in lst:
+        cleaned_string = string.strip().replace("  ", " ")
+        cleaned_list.append(cleaned_string)
+    return cleaned_list

@@ -3,6 +3,8 @@ import re
 import emoji
 import random
 
+__version__='1.0.0'
+__auther__='uzkate'
 
 def get_tg_user_request_time() -> str:
     """Получаем время запроса."""
@@ -45,9 +47,7 @@ def get_random_message(messages_list: tuple[str]) -> str:
 
 
 def remove_double_spaces(lst: list[str]) -> list[str]:
-    """
-    Удаляет двойные пробелы и пробелы в конце строк из списка.
-    """
+    """Удаляет двойные пробелы и пробелы в конце строк из списка."""
     cleaned_list = []
     for string in lst:
         cleaned_string = string.strip().replace("  ", " ")

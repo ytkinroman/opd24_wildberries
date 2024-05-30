@@ -129,7 +129,7 @@ class WB:
         self.set_headers(headers)
 
         # Отправка запроса к API Wildberries для получения данных о товаре
-        response = requests.get(f'https://card.wb.ru/cards/v2/detail?appType=1&curr=rub&nm={self.get_article()}',
+        response = requests.get(f'https://card.wb.ru/cards/v2/detail?appType=1&curr=rub&dest=-5819002&spp=30&nm={self.get_article()}',
                                 headers=self.get_headers())
 
         # Проверка статуса ответа от API

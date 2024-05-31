@@ -20,8 +20,8 @@ async def main():
     dp.message.register(start_cmd, Command(commands=["start", "run"]))
     dp.message.register(help_cmd, Command(commands=["help", "support"]))
     dp.message.register(info_cmd, Command(commands=["info", "information"]))
-    dp.message.register(privacy_policy_cmd, Command(commands=["privacy", "policy", "privacy_policy"]))
     dp.message.register(stickers_cmd, Command(commands=["stickers", "sticker"]))
+    dp.message.register(privacy_policy_cmd, Command(commands=["privacy", "policy", "privacy_policy"]))
 
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
@@ -30,7 +30,7 @@ async def main():
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger()
-    file_handler = logging.FileHandler("logs/log_app.log", encoding='utf-8')
+    file_handler = logging.FileHandler("logs/log_app.log", encoding="utf-8")
     formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
     file_handler.setFormatter(formatter)
     logger.addHandler(file_handler)
@@ -38,4 +38,4 @@ if __name__ == "__main__":
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
-        print("end bot ...")
+        print("stop bot...")

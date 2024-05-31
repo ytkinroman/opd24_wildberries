@@ -38,7 +38,18 @@ def remove_newline(sentences):
     return cleaned_sentences
 
 
-def get_random_message(messages_list: list[str]) -> str:
-    """Функция возвращает случайное значение из списка."""
-    return random.choice(messages_list)
+def get_random_message(messages_list: tuple[str]) -> str:
+    """Функция возвращает случайное значение из картежа."""
+    message = random.choice(messages_list)
+    return message
 
+
+def remove_double_spaces(lst: list[str]) -> list[str]:
+    """
+    Удаляет двойные пробелы и пробелы в конце строк из списка.
+    """
+    cleaned_list = []
+    for string in lst:
+        cleaned_string = string.strip().replace("  ", " ")
+        cleaned_list.append(cleaned_string)
+    return cleaned_list

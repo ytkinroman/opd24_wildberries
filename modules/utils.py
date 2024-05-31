@@ -3,6 +3,9 @@ import re
 import emoji
 import random
 
+__version__ = "1.0.0"
+__author__ = "uzkate"
+
 
 def get_tg_user_request_time() -> str:
     """Получаем время запроса."""
@@ -15,7 +18,7 @@ def extract_url(text) -> str | None:
     regex = r"(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))"
     match = re.search(regex, text)
     if match:
-        return match.group(0)  # Возвращаем найденную ссылку.
+        return match.group(0)
     else:
         return None
 
@@ -45,9 +48,7 @@ def get_random_message(messages_list: tuple[str]) -> str:
 
 
 def remove_double_spaces(lst: list[str]) -> list[str]:
-    """
-    Удаляет двойные пробелы и пробелы в конце строк из списка.
-    """
+    """Удаляет двойные пробелы и пробелы в конце строк из списка."""
     cleaned_list = []
     for string in lst:
         cleaned_string = string.strip().replace("  ", " ")

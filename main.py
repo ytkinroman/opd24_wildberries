@@ -12,6 +12,7 @@ from config import BOT_TOKEN
 async def main():
     bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.MARKDOWN))
     dp = Dispatcher()
+
     dp.include_router(router)
 
     dp.startup.register(start_bot)
@@ -31,7 +32,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger()
     file_handler = logging.FileHandler("logs/log_app.log", encoding="utf-8")
-    formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+    formatter = logging.Formatter("%(asctime)s | %(name)s | %(levelname)s | %(message)s")
     file_handler.setFormatter(formatter)
     logger.addHandler(file_handler)
 

@@ -1,5 +1,5 @@
 import asyncio
-import logging
+from logging import getLogger, basicConfig, DEBUG, FileHandler
 from aiogram import Bot, Dispatcher
 from aiogram.filters import Command
 from aiogram.client.default import DefaultBotProperties
@@ -29,14 +29,15 @@ async def main():
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
-    logger = logging.getLogger()
-    file_handler = logging.FileHandler("logs/log_app.log", encoding="utf-8")
-    formatter = logging.Formatter("%(asctime)s | %(name)s | %(levelname)s | %(message)s")
-    file_handler.setFormatter(formatter)
-    logger.addHandler(file_handler)
+    logger = getLogger()
+    LOGGER_FORMAT = "%(asctime)s | %(name)s | %(levelname)s | %(message)s"
+    file_handler = FileHandler("logs/new_logs.log", encoding="utf-8")
+    file_handler.setLevel(DEBUG)
+    basicConfig(level=DEBUG, format=LOGGER_FORMAT)
+    # basicConfig(level=DEBUG, format=LOGGER_FORMAT, handlers=[file_handler])
 
     try:
         asyncio.run(main())
+        logger.info("Telegram bot is started")
     except KeyboardInterrupt:
-        print("stop bot...")
+        logger.info("Telegram bot is stopped")

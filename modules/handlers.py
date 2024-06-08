@@ -1,5 +1,5 @@
 import asyncio
-import logging
+from logging import getLogger
 from config import *
 from aiogram import Router
 from aiogram.types import Message, FSInputFile
@@ -12,6 +12,8 @@ from modules.HelpGPT import get_result_message
 from modules.APIQueue import APIQueue
 from modules.JsonCreator import get_generation_json
 
+
+logger = getLogger(__name__)
 router = Router()
 neuro_classifier = NeuroClassifier(NEURO_CLASSIFIER_PATH)
 API_queue = APIQueue(GPT_TOKENS)
@@ -27,19 +29,21 @@ async def process_message(message: Message, state: FSMContext):
         await asyncio.sleep(1)
         url = extract_url(message.text)
 
-        logging.info(f"[Information] User {message.from_user.username} (ID: {message.from_user.id}), send message: \"{message.text}\", date: {get_tg_user_request_time()};")
-
         if url:
             if await state.get_state() is not None:
                 await message.reply(BOT_MESSAGE_REQUEST_PROGRESS)
+                logger.warning('[URL] User %s (ID: %d) submitted URL: %s' % (message.from_user.username, message.from_user.id, url))
                 return
 
             await state.set_state(StatesForm.waiting_for_processing)
             progress_message = await message.reply(get_random_message(BOT_MESSAGE_WAIT))
             asyncio.create_task(process_response(message, state, url, progress_message))
+            # logger.info('[URL] User %s (ID: %d) started processing URL: %s' % (message.from_user.username, message.from_user.id, url))
         else:
+            logger.warning('[URL] User %s (ID: %d) sent message without URL: %s' % (message.from_user.username, message.from_user.id, message.text))
             await message.reply(get_random_message(BOT_MESSAGE_NO_URL))
     else:
+        logger.warning('[URL] User %s (ID: %d) sent empty message' % (message.from_user.username, message.from_user.id))
         await message.reply(get_random_message(BOT_MESSAGE_NO_URL))
 
 
@@ -47,21 +51,18 @@ async def process_response(message: Message, state: FSMContext, url: str, progre
     comments = get_wb_comments(url, WB_PARSER_MAX_COMMENTS)
     if len(comments) == 1:
         if comments[0] == "error1":
-            logging.warning(f"[WARNING] [WB] User {message.from_user.username} (ID: {message.from_user.id}), send message: \"{message.text}\", description: \"No comments\", date: {get_tg_user_request_time()};")
+            logger.warning('[WB] User %s (ID: %d), send message: \"%s\", description: \"No comments\"' % (message.from_user.username, message.from_user.id, message.text))
             await progress_message.delete()
-            # await asyncio.sleep(2)
             await message.reply(BOT_MESSAGE_ERROR_NO_COMMENTS)
             await state.clear()
         elif comments[0] == "error2":
-            logging.warning(f"[WARNING] [WB] User {message.from_user.username} (ID: {message.from_user.id}), send message: \"{message.text}\", description: \"Invalid url\", date: {get_tg_user_request_time()};")
+            logger.warning('[WB] User %s (ID: %d), send message: \"%s\", description: \"Invalid url\"' % (message.from_user.username, message.from_user.id, message.text))
             await progress_message.delete()
-            # await asyncio.sleep(2)
             await message.reply(BOT_MESSAGE_ERROR_NO_URL)
             await state.clear()
         elif comments[0] == "error3":
-            logging.warning(f"[WARNING] [WB] User {message.from_user.username} (ID: {message.from_user.id}), send message: \"{message.text}\", description: \"Unkown error\", date: {get_tg_user_request_time()};")
+            logger.error('[WB] User %s (ID: %d), send message: \"%s\", description: \"Unkown error\"' % (message.from_user.username, message.from_user.id, message.text))
             await progress_message.delete()
-            # await asyncio.sleep(2)
             await message.reply(BOT_MESSAGE_ERROR_UNKOWN)
             await state.clear()
     else:
@@ -75,30 +76,28 @@ async def process_response(message: Message, state: FSMContext, url: str, progre
         result_file_json = await get_generation_json(str(message.from_user.username), str(message.from_user.id), mood, get_tg_user_request_time(), JSON_SAVE_PATH)
 
         if result == "error3" or result == "error4":
-            logging.error(f"[ERROR] [ChatGPT] User {message.from_user.username} (ID: {message.from_user.id}), send message: {message.text}, comments: {mood[:5]}..., description: Unkown ChatGPT error, date: {get_tg_user_request_time()};")
+            logger.error('[ChatGPT] User %s (ID: %d), send message: \"%s\", description: \"Unkown ChatGPT error\"' % (message.from_user.username, message.from_user.id, message.text))
             await message.reply(BOT_MESSAGE_ERROR_NO_RESULT_GPT)
 
             if result_file_json == "ERROR_JSON":
-                logging.info(f"[ERROR] [JSON] User {message.from_user.username} (ID: {message.from_user.id}), send message: \"{message.text}\", description: User didn't get the JSON file, date: {get_tg_user_request_time()};")
+                logger.error('[JSON] User %s (ID: %d), send message: \"%s\", description: \"User did not get the JSON file\"' % (message.from_user.username, message.from_user.id, message.text))
             else:
                 json_document = FSInputFile(path=result_file_json)
-                logging.info(f"[JSON] User {message.from_user.username} (ID: {message.from_user.id}) got the json: \"{result_file_json}\", date: {get_tg_user_request_time()};")
+                logger.info('[JSON] User %s (ID: %d), send message: \"%s\", got the json \"%s\"' % (message.from_user.username, message.from_user.id, message.text, result_file_json))
                 await message.reply_document(document=json_document, caption=f"Результат классификации отзывов: {get_tg_user_request_time()}")
 
             await progress_message.delete()
             await asyncio.sleep(1)
             await state.clear()
         else:
-            # Краткая форма:
-            # logging.info(f"[RESPONSE] User {message.from_user.username} (ID: {message.from_user.id}), send message: \"{message.text}\", comments: {mood[:4]}..., result: \"{result[:150]}...\", date: {get_tg_user_request_time()};")
-            logging.info(f"[RESPONSE] User {message.from_user.username} (ID: {message.from_user.id}), send message: \"{message.text}\", comments: \"{mood}\", result: \"{result}\", date: {get_tg_user_request_time()};")
+            logger.info(f"[RESPONSE] User {message.from_user.username} (ID: {message.from_user.id}), send message: \"{message.text}\", comments: \"{mood}\", result: \"{result}\", ")
 
             await message.reply(result)
 
             if result_file_json == "ERROR_JSON":
-                logging.info(f"[ERROR] [JSON] User {message.from_user.username} (ID: {message.from_user.id}), send message: \"{message.text}\", description: User didn't get the JSON file, date: {get_tg_user_request_time()};")
+                logger.error('[JSON] User %s (ID: %d), send message: \"%s\", description: \"User did not get the JSON file\"' % (message.from_user.username, message.from_user.id, message.text))
             else:
-                logging.info(f"[JSON] User {message.from_user.username} (ID: {message.from_user.id}) got the json: \"{result_file_json}\", date: {get_tg_user_request_time()};")
+                logger.info('[JSON] User %s (ID: %d), send message: \"%s\", got the json \"%s\"' % (message.from_user.username, message.from_user.id, message.text, result_file_json))
                 json_document = FSInputFile(path=result_file_json)
                 await message.reply_document(document=json_document, caption=f"Результат классификации отзывов: {get_tg_user_request_time()}")
 

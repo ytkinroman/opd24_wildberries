@@ -5,12 +5,12 @@ from aiogram.types import BotCommand, BotCommandScopeDefault
 async def basic_commands_list(bot: Bot):
     commands = [
         BotCommand(
-            command="start",
-            description="Начать работу"
-        ),
-        BotCommand(
             command="privacy",
             description="Политика конфиденциальности"
+        ),
+        BotCommand(
+            command="info",
+            description="Информация"
         ),
         BotCommand(
             command="stickers",
@@ -19,10 +19,6 @@ async def basic_commands_list(bot: Bot):
         BotCommand(
             command="help",
             description="Помощь"
-        ),
-        BotCommand(
-            command="info",
-            description="Информация"
         )
     ]
 

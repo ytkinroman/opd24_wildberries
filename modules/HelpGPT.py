@@ -12,8 +12,11 @@ Description:
 import requests
 import datetime
 import tiktoken
-from config import PROXY_OPENAI_URL, GPT_TEXT_TOKENS_LIMIT
+from config import GPT_TEXT_TOKENS_LIMIT
+from modules.proxy_module import Proxy
 
+proxy = Proxy()
+proxies = proxy.get_urls()
 
 INSTRUCTION = """
 Я передаю тебе список содержащий отзывы на товары с маркетплейса. 
@@ -136,7 +139,7 @@ def get_result_message(comments: list, API_queue):
                     "https://api.openai.com/v1/chat/completions",
                     headers={"Authorization": f"Bearer {api_key}"},
                     json={"messages": message, "model": "gpt-3.5-turbo"},
-                    proxies={"http": PROXY_OPENAI_URL, "https": PROXY_OPENAI_URL}
+                    proxies=proxies
                 )
 
                 response_data = response.json()

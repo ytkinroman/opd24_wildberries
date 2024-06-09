@@ -13,6 +13,7 @@ import requests
 import json
 import time
 from modules.utils import get_tg_user_request_time
+from config import WB_MIN_QUANTITY_OF_COMMENTS
 
 
 def remove_params(url: str) -> str:
@@ -290,7 +291,7 @@ def get_wb_comments(url: str, size: int = 10) -> list:
     else:
         comments.append("error2")
 
-    if len(comments) < MIN_QUANTITY_OF_COMMENTS:
+    if len(comments) < WB_MIN_QUANTITY_OF_COMMENTS:
         comments = ["error5"]
 
     del wb

@@ -54,22 +54,25 @@ async def process_response(message: Message, state: FSMContext, url: str, progre
             logger.warning('[WB] User %s (ID: %d), send message: \"%s\", description: \"No comments\"' % (message.from_user.username, message.from_user.id, message.text))
             await progress_message.delete()
             await message.reply(BOT_MESSAGE_ERROR_NO_COMMENTS)
+            await asyncio.sleep(1)
             await state.clear()
         elif comments[0] == "error2":
             logger.warning('[WB] User %s (ID: %d), send message: \"%s\", description: \"Invalid url\"' % (message.from_user.username, message.from_user.id, message.text))
             await progress_message.delete()
             await message.reply(BOT_MESSAGE_ERROR_NO_URL)
+            await asyncio.sleep(1)
             await state.clear()
         elif comments[0] == "error3":
             logger.error('[WB] User %s (ID: %d), send message: \"%s\", description: \"Unkown error\"' % (message.from_user.username, message.from_user.id, message.text))
             await progress_message.delete()
             await message.reply(BOT_MESSAGE_ERROR_UNKOWN)
+            await asyncio.sleep(1)
             await state.clear()
         elif comments[0] == "error5":
-            logging.warning(f"[WARNING] [WB] User {message.from_user.username} (ID: {message.from_user.id}), send message: \"{message.text}\", description: \"Not enough reviews\", date: {get_tg_user_request_time()};")
+            logger.warning('[WB] User %s (ID: %d), send message: \"%s\", description: \"Not enough reviews\"' % (message.from_user.username, message.from_user.id, message.text))
             await progress_message.delete()
-            # await asyncio.sleep(2)
-            await message.reply(BOT_MESSAGE_NOT_ENOUGH_REVIEWS)
+            await message.reply(get_random_message(BOT_MESSAGE_NOT_ENOUGH_REVIEWS))
+            await asyncio.sleep(1)
             await state.clear()
     else:
         comments = remove_newline(replace_emoji(comments))

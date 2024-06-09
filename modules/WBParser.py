@@ -2,7 +2,7 @@
 Модуль для работы с Wildberries API.
 
 Author: Al0n1
-Version: 1.0.4
+Version: 1.0.5
 
 Description:
 Этот модуль позволяет получать отзывы о товарах с сайта Wildberries.
@@ -289,6 +289,9 @@ def get_wb_comments(url: str, size: int = 10) -> list:
                     comments = wb.get_feedbacks()
     else:
         comments.append("error2")
+
+    if len(comments) < MIN_QUANTITY_OF_COMMENTS:
+        comments = ["error5"]
 
     del wb
     return comments

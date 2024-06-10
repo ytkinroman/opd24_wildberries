@@ -1,6 +1,10 @@
 from config import PROXY_USERNAME, PROXY_PASSWORD, PROXY_IP
 
 
+__author__ = "@ytkinroman"
+__version__ = "1.0.0"
+
+
 class Proxy:
     """Класс, представляющий прокси-сервер."""
 

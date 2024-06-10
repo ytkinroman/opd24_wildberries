@@ -1,5 +1,5 @@
 import asyncio
-from logging import getLogger, basicConfig, DEBUG, FileHandler
+from logging import getLogger, basicConfig, DEBUG, FileHandler, StreamHandler
 from aiogram import Bot, Dispatcher
 from aiogram.filters import Command
 from aiogram.client.default import DefaultBotProperties
@@ -33,8 +33,9 @@ if __name__ == "__main__":
     LOGGER_FORMAT = "%(asctime)s | %(name)s | %(levelname)s | %(message)s"
     file_handler = FileHandler("logs/new_logs.log", encoding="utf-8")
     file_handler.setLevel(DEBUG)
-    basicConfig(level=DEBUG, format=LOGGER_FORMAT)
-    # basicConfig(level=DEBUG, format=LOGGER_FORMAT, handlers=[file_handler])
+    console_stream = StreamHandler()
+    console_stream.setLevel(DEBUG)
+    basicConfig(level=DEBUG, format=LOGGER_FORMAT, handlers=[file_handler, console_stream])
 
     try:
         asyncio.run(main())

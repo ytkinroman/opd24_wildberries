@@ -6,7 +6,7 @@ from aiogram.types import Message, FSInputFile
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
 from modules.utils import get_tg_user_request_time, extract_url, remove_newline, replace_emoji, get_random_message, remove_double_spaces
-from modules.NeuroClassifier import NeuroClassifier
+from modules.classifier_text import NeuroClassifier
 from modules.WBParser import get_wb_comments
 from modules.HelpGPT import get_result_message
 from modules.APIQueue import APIQueue
@@ -15,7 +15,11 @@ from modules.JsonCreator import get_generation_json
 
 logger = getLogger(__name__)
 router = Router()
-neuro_classifier = NeuroClassifier(NEURO_CLASSIFIER_PATH)
+
+tokenizer = NEURO_CLASSIFIER_TOKENIZER_PATH
+model = NEURO_CLASSIFIER_MODEL_PATH
+classifier = NeuroClassifier(tokenizer, model)
+
 API_queue = APIQueue(GPT_TOKENS)
 
 
@@ -78,7 +82,7 @@ async def process_response(message: Message, state: FSMContext, url: str, progre
         comments = remove_newline(replace_emoji(comments))
         comments = remove_double_spaces(comments)
 
-        mood = await asyncio.to_thread(neuro_classifier.classify_data, comments[:NEURO_CLASSIFIER_MAX_COMMENTS])
+        mood = await asyncio.to_thread(classifier.classify_data, comments[:NEURO_CLASSIFIER_MAX_COMMENTS])
 
         result = get_result_message(mood, API_queue)
 
